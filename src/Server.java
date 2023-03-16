@@ -25,17 +25,14 @@ public class Server {
 
             // read data from the client until "Over" is sent
             while (!line.equals("Over")) {
-                try {
-                    // read a line of UTF-8 encoded text from the input stream
-                    line = in.readUTF();
-                    System.out.println(line);
-                } catch (IOException i) {
-                    System.out.println(i);
-                }
+                // read a line of UTF-8 encoded text from the input stream
+                line = in.readUTF();
+                System.out.println(line);
             }
 
             System.out.println("Closing connection");
             // close the socket and input stream
+
             socket.close();
             in.close();
         } catch (IOException i) {

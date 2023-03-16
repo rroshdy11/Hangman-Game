@@ -12,33 +12,26 @@ public class Client {
             socket = new Socket(address, port);
             System.out.println("Connected");
 
+
             // create a new DataOutputStream to write data to the socket
             out = new DataOutputStream(socket.getOutputStream());
-        } catch(UnknownHostException u) {
-            System.out.println(u);
-        } catch(IOException i) {
-            System.out.println(i);
-        }
 
-        // create a new BufferedReader to read data from the console
-        BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+            // create a new BufferedReader to read data from the console
+            BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 
-        String line = "";
+            String line = "";
 
-        // read input from the console and write it to the socket until "Over" is entered
-        while (!line.equals("Over")) {
-            try {
+            // read input from the console and write it to the socket until "Over" is entered
+            while (!line.equals("Over")) {
+
                 line = console.readLine();
                 out.writeUTF(line);
-            } catch(IOException i) {
-                System.out.println(i);
-            }
-        }
 
-        // close the socket and output stream
-        try {
+            }
             out.close();
             socket.close();
+        } catch(UnknownHostException u) {
+            System.out.println(u);
         } catch(IOException i) {
             System.out.println(i);
         }
