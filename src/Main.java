@@ -6,57 +6,69 @@
 // score criteria (num of chars in pharse)
 // when two teams finishes their worng attempts
 
+import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
 
 
 public class Main {
-    private static Connection conn = null;
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, IOException {
 
         System.out.println("Hello world!");
-        //add new player to database using his name and username and password
-        addNewPlayerToDB("ahmed", "ahmed", "123");
-
-
-
-    }
-    //add new player to database using his name and username and password
-    public static void addNewPlayerToDB(String name, String username, String password) throws SQLException {
-        connect();
-        //sql statement
-        String sql = "INSERT INTO User(name,username,password) VALUES('" + name + "','" + username + "','" + password + "')";
-        //execute sql statement
-        Statement stmt = conn.createStatement();
-        stmt.execute(sql);
-        disconnect();
-
-    }
-
-
-    public static void connect() {
-        try {
-            // db parameters
-            Class.forName("org.sqlite.JDBC");
-            String url = "jdbc:sqlite:DB.db";
-            // create a connection to the database
-            conn = DriverManager.getConnection(url);
-            System.out.println("Connection to SQLite has been established.");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        writePlayerToFile("reda", "username", "password");
+        ArrayList<Player> players = readPlayersFromFile();
+        //print players
+        for (Player player : players) {
+           System.out.println(player.getName() + " " + player.getUsername() + " " + player.getPassword());
         }
+
+
+
     }
-        //disconnect from database
-    public static void disconnect() {
-        try {
-            if (conn != null) {
-                conn.close();
+    //write new player in a file using file writer and buffered writer
+    public static String writePlayerToFile(String name, String username, String password) throws IOException, IOException {
+        ArrayList<Player> players = readPlayersFromFile();
+        boolean exists = false;
+        //check if username already exists
+        for (Player player : players) {
+            if (player.getUsername().equals(username)) {
+                exists = true;
             }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+        }
+        //if username doesn't exist write player in file
+        if(!exists){
+            FileWriter fw = new FileWriter("Users.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(name + "," + username + "," + password);
+            bw.newLine();
+            bw.close();
+            return "Player added successfully";
+        }
+        else {
+            return "Username already exists";
         }
     }
+
+    //read players from file using file reader and buffered reader
+    public static ArrayList<Player> readPlayersFromFile() throws IOException {
+        ArrayList<Player> players = new ArrayList<Player>();
+        FileReader fr = new FileReader("Players.txt");
+        BufferedReader br = new BufferedReader(fr);
+        String line = br.readLine();
+        while (line != null) {
+            String[] player = line.split(",");
+            Player p = new Player(player[0], player[1], player[2]);
+            players.add(p);
+            line = br.readLine();
+        }
+        br.close();
+        return players;
+    }
+
+
+
+
+
 }
 
