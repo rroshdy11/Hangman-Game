@@ -19,6 +19,7 @@ public class Main {
         addNewPlayerToDB("ahmed", "ahmed", "123");
 
 
+
     }
     //add new player to database using his name and username and password
     public static void addNewPlayerToDB(String name, String username, String password) throws SQLException {
