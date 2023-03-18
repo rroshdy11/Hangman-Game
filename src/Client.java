@@ -23,17 +23,21 @@ public class Client {
             System.out.println(output);
 
             // read a line from the console
-            String login_menu = in.readUTF();
-            System.out.println(login_menu);
-            String choice = console.readLine();
-            out.writeUTF(choice);
-            output = in.readUTF();
-            System.out.println(output);
-            String userInfo = console.readLine();
-            out.writeUTF(userInfo);
-            output = in.readUTF();
-            System.out.println(output);
-
+            while (true) {
+                String login_menu = in.readUTF();
+                System.out.println(login_menu);
+                String choice = console.readLine();
+                out.writeUTF(choice);
+                output = in.readUTF();
+                System.out.println(output);
+                String userInfo = console.readLine();
+                out.writeUTF(userInfo);
+                output = in.readUTF();
+                System.out.println(output);
+                if(output.equals("logged in successfully") || output.equals("Player added successfully")){
+                    break;
+                }
+            }
 
 
 

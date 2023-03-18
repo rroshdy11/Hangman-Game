@@ -40,6 +40,11 @@ public class Player {
             this.losses = 0;
             this.draws = 0;
         }
+
+    public Player(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
         //getters and setters
 
 
@@ -100,27 +105,52 @@ public class Player {
         }
         public  String register(String name, String username, String password ) throws IOException, IOException {
 
-                boolean exists = false;
-                //check if username already exists
-                for (Player player : players) {
-                        if (player.getUsername().equals(username)) {
-                                exists = true;
-                        }
+            boolean exists = false;
+            //check if username already exists
+            for (Player player : players) {
+                if (player.getUsername().equals(username)) {
+                    exists = true;
                 }
-                //if username doesn't exist write player in file
-                if(!exists){
-                        FileWriter fw = new FileWriter("src/ServerSide/GameSetup/Players.txt", true);
-                        BufferedWriter bw = new BufferedWriter(fw);
-                        bw.write(name + "," + username + "," + password);
-                        bw.newLine();
-                        bw.close();
-                        players.add(new Player(name, username, password));
-                        return "Player added successfully";
+            }
+            //if username doesn't exist write player in file
+            if (!exists) {
+                FileWriter fw = new FileWriter("src/ServerSide/GameSetup/Players.txt", true);
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(name + "," + username + "," + password);
+                bw.newLine();
+                bw.close();
+                players.add(new Player(name, username, password));
+                return "Player added successfully";
 
+            } else {
+                return "Username already exists";
+            }
+        }
+
+    public String login(String username, String password) {
+            boolean exists = false;
+            boolean correctPassword = false;
+        for (Player player : players) {
+            if (player.getUsername().equals(username) ) {
+                exists = true;
+                if (player.getPassword().equals(password)) {
+                    correctPassword = true;
                 }
-                else {
-                        return "Username already exists";
-                }
+            }
+        }
+            if (!exists) {
+                return "404 error, not found";
+            } else if (!correctPassword) {
+                return "401 error, unauthorized";
+            }
+            else {
+                return "logged in successfully";
+            }
+
+    }
+
+
+
         }
 
 
@@ -132,11 +162,6 @@ public class Player {
 
 
 
-
-
-
-
-}
 
 
 

@@ -32,43 +32,58 @@ public class Server extends Thread {
 
         // write a welcome message to the client
         out.writeUTF("Hello from HangMan ServerSide.Game server");
-
-        out.writeUTF("choose from menu.\n 1. Register \n 2. Sign in");
-
-        String choice = in.readUTF();
-
-        if (choice.equals("1")) {
-            // perform the registration process
-            out.writeUTF("You chose to register. Please enter your username ,name and password \n separated by comma \n eg: name,username,password");
-            // read the user's input for username and name and password
-            String line = in.readUTF();
-            String[] playerDetails = line.split(",");
-            String name = playerDetails[0];
-            String username = playerDetails[1];
-            String password = playerDetails[2];
-            Player player = new Player(name, username, password);
-            out.writeUTF(player.register(name , username , password));
-
-
-        } else if (choice.equals("")) {
-            // perform the sign-in process
-            out.writeUTF("You chose to sign in. Please enter your username and password.");
-            // read the user's input for username and password
-            String username = in.readUTF();
-            String password = in.readUTF();
-
-
-
-
-        } else {
-            // handle invalid input
-            out.writeUTF("Invalid choice. Please choose either 1 or 2.");
-        }
+        loginmenu(in,out);
 
         // close the socket and input stream
         System.out.println("Closing connection");
         socket.close();
         in.close();
+    }
+
+    public void loginmenu(DataInputStream in,DataOutputStream out) throws IOException {
+       while (true) {
+           out.writeUTF("choose from menu.\n 1. Register \n 2. Sign in");
+
+           String choice = in.readUTF();
+
+           if (choice.equals("1")) {
+               // perform the registration process
+               out.writeUTF("You chose to register. Please enter your username ,name and password \n separated by comma \n eg: name,username,password");
+               // read the user's input for username and name and password
+               String line = in.readUTF();
+               String[] playerDetails = line.split(",");
+               String name = playerDetails[0];
+               String username = playerDetails[1];
+               String password = playerDetails[2];
+               Player player = new Player(name, username, password);
+               String register = player.register(name, username, password);
+               out.writeUTF(register);
+               if(register.equals("Player added successfully")){
+                   break;
+               }
+
+
+           } else if (choice.equals("2")) {
+               // perform the sign-in process
+               out.writeUTF("You chose to sign in. Please enter your username and password \n separated by comma \n eg: username,password\"");
+               // read the user's input for username and password
+               String line = in.readUTF();
+               String[] playerDetails = line.split(",");
+               String username = playerDetails[0];
+               String password = playerDetails[1];
+               Player player = new Player(username, password);
+               String login= player.login(username, password);
+               out.writeUTF(login);
+               if(login.equals("logged in successfully")){
+                  break;
+               }
+
+
+           } else {
+               // handle invalid input
+               out.writeUTF("Invalid choice. Please choose either 1 or 2.");
+           }
+       }
     }
     // override the run() method of the Thread class
     public void run()
