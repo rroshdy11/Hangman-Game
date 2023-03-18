@@ -13,7 +13,7 @@ public class GameSetupService {
     public void gameSetup(){
         try {
             HangManGame.setWords(readWords());
-            Server.setPlayers(readPlayersFromFile());
+            Player.setPlayers(readPlayersFromFile());
             HangManGame.setMaxWrongAttempts((Integer) readGameConfigurations().get(0));
             MultiHangManGame.setMaxNumberOfPlayers((Integer) readGameConfigurations().get(1));
             MultiHangManGame.setMinNumberOfPlayers((Integer) readGameConfigurations().get(2));

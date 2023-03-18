@@ -1,10 +1,14 @@
 package ServerSide;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.*;
+import java.util.ArrayList;
 
 
 public class Player {
@@ -15,6 +19,17 @@ public class Player {
         private int wins; //number of wins of the player
         private int losses; //number of losses of the player
         private int draws; //number of draws of the player
+
+      private static ArrayList<Player> players = new ArrayList<Player>();
+
+        public static ArrayList<Player> getPlayers() {
+                return players;
+        }
+
+        public static void setPlayers(ArrayList<Player> players) {
+                Player.players = players;
+        }
+
         //constructor
         public Player(String name, String username, String password) {
             this.name = name;
@@ -83,6 +98,44 @@ public class Player {
         public void setDraws(int draws) {
                 this.draws = draws;
         }
+        public  String register(String name, String username, String password ) throws IOException, IOException {
+
+                boolean exists = false;
+                //check if username already exists
+                for (Player player : players) {
+                        if (player.getUsername().equals(username)) {
+                                exists = true;
+                        }
+                }
+                //if username doesn't exist write player in file
+                if(!exists){
+                        FileWriter fw = new FileWriter("src/ServerSide/GameSetup/Players.txt", true);
+                        BufferedWriter bw = new BufferedWriter(fw);
+                        bw.write(name + "," + username + "," + password);
+                        bw.newLine();
+                        bw.close();
+                        players.add(new Player(name, username, password));
+                        return "Player added successfully";
+
+                }
+                else {
+                        return "Username already exists";
+                }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 

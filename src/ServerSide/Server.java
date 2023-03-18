@@ -8,6 +8,7 @@ import javax.sound.midi.SysexMessage;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Server extends Thread {
     private Socket socket = null;
@@ -19,9 +20,6 @@ public class Server extends Thread {
     //Static Number of Clients to be connected
     private static int minClients = 4;
     //All Registered Players in the game Server
-    private static ArrayList<Player> players = new ArrayList<Player>();
-
-    private static ArrayList<Player> loggedInPlayers = new ArrayList<Player>();
 
     public void setSocket(Socket socket) {
         this.socket = socket;
@@ -35,14 +33,38 @@ public class Server extends Thread {
         // write a welcome message to the client
         out.writeUTF("Hello from HangMan ServerSide.Game server");
 
-        // create a new DataInputStream to read data from the client socket
-        String line = "";
-        // read data from the client until "Over" is sent
-        while (!line.equals("Over")) {
-            // read a line of UTF-8 encoded text from the input stream
-            line = in.readUTF();
-            System.out.println(line);
+        out.writeUTF("choose from menu.\n 1. Register \n 2. Sign in");
+
+        String choice = in.readUTF();
+
+        if (choice.equals("1")) {
+            // perform the registration process
+            out.writeUTF("You chose to register. Please enter your username ,name and password \n separated by comma \n eg: name,username,password");
+            // read the user's input for username and name and password
+            String line = in.readUTF();
+            String[] playerDetails = line.split(",");
+            String name = playerDetails[0];
+            String username = playerDetails[1];
+            String password = playerDetails[2];
+            Player player = new Player(name, username, password);
+            out.writeUTF(player.register(name , username , password));
+
+
+        } else if (choice.equals("")) {
+            // perform the sign-in process
+            out.writeUTF("You chose to sign in. Please enter your username and password.");
+            // read the user's input for username and password
+            String username = in.readUTF();
+            String password = in.readUTF();
+
+
+
+
+        } else {
+            // handle invalid input
+            out.writeUTF("Invalid choice. Please choose either 1 or 2.");
         }
+
         // close the socket and input stream
         System.out.println("Closing connection");
         socket.close();
@@ -118,19 +140,4 @@ public class Server extends Thread {
         Server.minClients = minClients;
     }
 
-    public static ArrayList<Player> getPlayers() {
-        return players;
-    }
-
-    public static void setPlayers(ArrayList<Player> players) {
-        Server.players = players;
-    }
-
-    public static ArrayList<Player> getLoggedInPlayers() {
-        return loggedInPlayers;
-    }
-
-    public static void setLoggedInPlayers(ArrayList<Player> loggedInPlayers) {
-        Server.loggedInPlayers = loggedInPlayers;
-    }
 }

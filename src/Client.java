@@ -22,13 +22,20 @@ public class Client {
             String output= in.readUTF();
             System.out.println(output);
 
-            String line = "";
+            // read a line from the console
+            String login_menu = in.readUTF();
+            System.out.println(login_menu);
+            String choice = console.readLine();
+            out.writeUTF(choice);
+            output = in.readUTF();
+            System.out.println(output);
+            String userInfo = console.readLine();
+            out.writeUTF(userInfo);
+            output = in.readUTF();
+            System.out.println(output);
 
-            // read input from the console and write it to the socket until "Over" is entered
-            while (!line.equals("Over")) {
-                line = console.readLine();
-                out.writeUTF(line);
-            }
+
+
 
             out.close();
             socket.close();
