@@ -3,7 +3,7 @@ package ServerSide.HangManGame;
 import java.util.ArrayList;
 
 public abstract class HangManGame {
-    protected static  int MAX_WRONG_ATTEMPTS = 6;
+    protected static  int MAX_WRONG_ATTEMPTS;
     protected static ArrayList<String> words = new ArrayList<String>();
     protected String word;
     protected String wordToGuess;
