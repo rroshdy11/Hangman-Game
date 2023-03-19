@@ -37,6 +37,21 @@ public class Client {
                 if(output.equals("logged in successfully") || output.equals("Player added successfully")){
                     break;
                 }
+
+            }
+            //menu for the game
+            while (true){
+                String menu = in.readUTF();
+                System.out.println(menu);
+                String choice = console.readLine();
+                out.writeUTF(choice);
+                output = in.readUTF();
+                System.out.println(output);
+                if(output.equals("Game Over")){
+                    break;
+                } else if (output.contains("exit")) {
+                    break;
+                }
             }
 
 

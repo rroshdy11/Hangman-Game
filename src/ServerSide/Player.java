@@ -1,8 +1,6 @@
 package ServerSide;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -148,10 +146,26 @@ public class Player {
             }
 
     }
+    public String getHistory() {
+        String history = "";
+        //read history from the file with the username
+        try {
+            FileReader fr = new FileReader("src/ServerSide/GameSetup/History/" + username + ".txt");
+            BufferedReader br = new BufferedReader(fr);
+            String line = br.readLine();
+            while (line != null) {
+                history += line + "";
+                line = br.readLine();
 
-
-
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return history;
+    }
+
+
+}
 
 
 
