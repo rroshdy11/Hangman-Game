@@ -19,7 +19,7 @@ public abstract class HangManGame {
         String wordToGuess = "";
         for(int i = 0; i<word.length(); i++){
             if((word.charAt(i)!= ' ')){
-                wordToGuess += "-";
+                wordToGuess += "_";
             }
             else{
                 wordToGuess += word.charAt(i);
