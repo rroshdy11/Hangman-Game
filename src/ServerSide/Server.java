@@ -20,7 +20,8 @@ public class Server extends Thread {
     private static int numClients = 0;
     //Static Number of Clients to be connected
     private static int minClients = 4;
-    //All Registered Players in the game Server
+
+    private  Player player;
 
     public void setSocket(Socket socket) {
         this.socket = socket;
@@ -33,18 +34,19 @@ public class Server extends Thread {
 
         // write a welcome message to the client
         out.writeUTF("Hello from HangMan ServerSide.Game server");
-        loginmenu(in,out);
-        menu(out,in);
-
+        loginMenu(in,out);
+        if(player!=null){
+            gameMenu(out,in);
+        }
         // close the socket and input stream
-        System.out.println("Closing connection");
+        out.writeUTF("Closing connection");
         socket.close();
         in.close();
     }
 
-    public void loginmenu(DataInputStream in,DataOutputStream out) throws IOException {
+    public void loginMenu(DataInputStream in,DataOutputStream out) throws IOException {
         while (true) {
-            out.writeUTF("choose from menu.\n 1. Register \n 2. Sign in");
+            out.writeUTF("choose from menu.\n 1. Register \n 2. Sign in \n (-) to exit from server");
 
             String choice = in.readUTF();
 
@@ -57,10 +59,11 @@ public class Server extends Thread {
                 String name = playerDetails[0];
                 String username = playerDetails[1];
                 String password = playerDetails[2];
-                Player player = new Player(name, username, password);
-                String register = player.register(name, username, password);
+                Player p = new Player(name, username, password);
+                String register = p.register(name, username, password);
                 out.writeUTF(register);
                 if (register.equals("Player added successfully")) {
+                    player= p;
                     break;
                 }
 
@@ -73,29 +76,65 @@ public class Server extends Thread {
                 String[] playerDetails = line.split(",");
                 String username = playerDetails[0];
                 String password = playerDetails[1];
-                Player player = new Player(username, password);
-                String login = player.login(username, password);
+                Player p = new Player(username, password);
+                String login = p.login(username, password);
                 out.writeUTF(login);
                 if (login.equals("logged in successfully")) {
+                    player = p;
                     break;
                 }
 
-
-            } else {
+            } else if (choice.equals("-")) {
+                break;
+            } else{
                 // handle invalid input
                 out.writeUTF("Invalid choice. Please choose either 1 or 2.");
             }
         }
     }
-        public void menu(DataOutputStream out ,DataInputStream in) throws IOException {
+        public void gameMenu(DataOutputStream out ,DataInputStream in) throws IOException {
             while (true) {
-                out.writeUTF("choose from menu.\n 1. Single Player \n 2. Multi Player \n 3. Show Player Scores \n 4. Exit");
+                out.writeUTF("\n------------------------------------------------\n" +
+                        "choose from menu.\n---------------------\n" +
+                        " 1. Single Player \n" +
+                        " 2. Multi Player \n" +
+                        " 3. Show Player Scores \n" +
+                        " 4. Exit");
 
                 String choiceplayer = in.readUTF();
                 if (choiceplayer.equals("1")) {
                     // perform the single player game
-                   // SingleHangManGame singleHangManGame = new SingleHangManGame(word, wordToGuess, wrongGuesses,player1);
-                    out.writeUTF("You chose to play single player game.");
+                    out.writeUTF("Starting The Game...");
+                    SingleHangManGame singleHangManGame = new SingleHangManGame(player);
+                    boolean exited = false;
+                    while (!singleHangManGame.isGameOver()) {
+                        out.writeUTF("Word to guess: " + singleHangManGame.getWordToGuess()+"\n"
+                                +"Wrong guesses: " +
+                                singleHangManGame.getWrongGuesses()+
+                                "\n"+"Enter your guess: ");
+                        String line = in.readUTF();
+                        char guess = line.charAt(0);
+                        if(guess=='-'){
+                            exited = true;
+                            out.writeUTF("You exited The Game." );
+                            break;
+                        }
+                        String result = singleHangManGame.guess(guess);
+                        if(singleHangManGame.isGameOver() && singleHangManGame.hasWon())
+                            out.writeUTF("Congratulations! You won the game.");
+                        else if(singleHangManGame.isGameOver() && !singleHangManGame.hasWon()) {
+                            out.writeUTF("Game Over! You lost . The word was: " + singleHangManGame.getWord() + "\n" +
+                                    "You made " + singleHangManGame.getWrongGuesses() + " wrong guesses.");
+                        }
+                        else{
+                            out.writeUTF("\n Result: "+result+" \n-----------------------" );
+                        }
+                    }
+                    if(exited){
+
+                        continue;
+                    }
+                    singleHangManGame.saveToPlayerHistory();
                     //startGame();
                 } else if (choiceplayer.equals("2")) {
                     // perform the multi player game
@@ -103,9 +142,10 @@ public class Server extends Thread {
                     out.writeUTF("You chose to play multi player game.");
                     //startGame();
                 } else if (choiceplayer.equals("3")) {
-
-                    out.writeUTF("show player scores History");
-
+                    out.writeUTF("player scores History . \n---------------------------\n " +
+                            "eg:(Game EndDate EndTime) - (state-score) \n" +
+                            "----------------------------------------\n ");
+                    out.writeUTF(player.getHistory());
                 }
                 else if (choiceplayer.equals("4")) {
                     // perform the exit process

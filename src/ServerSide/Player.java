@@ -6,17 +6,16 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public class Player {
         private String name;
         private String username;
         private String password;
-        private int score; //score of the player
-        private int wins; //number of wins of the player
-        private int losses; //number of losses of the player
-        private int draws; //number of draws of the player
 
       private static ArrayList<Player> players = new ArrayList<Player>();
 
@@ -33,10 +32,6 @@ public class Player {
             this.name = name;
             this.username = username;
             this.password = password;
-            this.score = 0;
-            this.wins = 0;
-            this.losses = 0;
-            this.draws = 0;
         }
 
     public Player(String username, String password) {
@@ -70,37 +65,7 @@ public class Player {
                 this.password = password;
         }
 
-        public int getScore() {
-                return score;
-        }
 
-        public void setScore(int score) {
-                this.score = score;
-        }
-
-        public int getWins() {
-                return wins;
-        }
-
-        public void setWins(int wins) {
-                this.wins = wins;
-        }
-
-        public int getLosses() {
-                return losses;
-        }
-
-        public void setLosses(int losses) {
-                this.losses = losses;
-        }
-
-        public int getDraws() {
-                return draws;
-        }
-
-        public void setDraws(int draws) {
-                this.draws = draws;
-        }
         public  String register(String name, String username, String password ) throws IOException, IOException {
 
             boolean exists = false;
@@ -154,7 +119,7 @@ public class Player {
             BufferedReader br = new BufferedReader(fr);
             String line = br.readLine();
             while (line != null) {
-                history += line + "";
+                history += line + "\n";
                 line = br.readLine();
 
             }
@@ -162,6 +127,22 @@ public class Player {
             e.printStackTrace();
         }
         return history;
+    }
+    //write history to the file with the username
+    public void addtoHistory(String state, int score){
+        try {
+            FileWriter fw = new FileWriter("src/ServerSide/GameSetup/History/" + username + ".txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            //get the current date and time
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+
+            bw.write( "("+dtf.format(now) +") - ("+state+"-" + score+")");
+            bw.newLine();
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -4,8 +4,8 @@ public class MultiHangManGame extends HangManGame{
     private static int MAX_NUMBER_OF_PLAYERS;
     private static int MIN_NUMBER_OF_PLAYERS;
 
-    public MultiHangManGame(String word, String wordToGuess, int wrongGuesses) {
-        super(word, wordToGuess, wrongGuesses);
+    public MultiHangManGame(int wrongGuesses) {
+        super();
     }
 
     public static int getMaxNumberOfPlayers() {
