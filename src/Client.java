@@ -53,7 +53,9 @@ public class Client {
                     out.writeUTF(choice);
                     output = in.readUTF();
                     System.out.println(output);
-                    if(output.contains("Start")){
+                    if(output.contains("Starting Single Player Game")){
+                        String any = console.readLine();
+                        out.writeUTF(any);
                         while(true) {
                             String word = in.readUTF();
                             System.out.println(word);
@@ -71,12 +73,47 @@ public class Client {
                             }
                         }
                     }
+                    else if(output.contains(("Starting Multi Player Game"))){
+                        //read the choice of user
+                        String choice2 = console.readLine();
+                        out.writeUTF(choice2);
+                        //read the response from the server
+                        output = in.readUTF();
+                        System.out.println(output);
+                        if(output.contains("number of players in the team")) {
+                            //read the number of players per team
+                            String numPlayersPerTeam = console.readLine();
+                            out.writeUTF(numPlayersPerTeam);
+                            //read the response from the server
+                            output = in.readUTF();
+                            System.out.println(output);
+                            //read the team name
+                            while (true) {
+                                String teamName = console.readLine();
+                                out.writeUTF(teamName);
+                                //check if the team name is valid or not
+                                output = in.readUTF();
+                                System.out.println(output);
+                                if (output.contains("valid")) {
+                                    break;
+                                }
+                            }
+                        }
+                        else if(output.contains("Join a team")){
+
+                        }
+                    }
                     else if(output.contains("History")){
+                        String any = console.readLine();
+                        out.writeUTF(any);
                         String history = in.readUTF();
                         System.out.println(history);
                     }
                     else if (output.contains("exit")) {
                         break;
+                    }
+                    else if(output.contains("Invalid choice")){
+                        continue;
                     }
                 }
             }

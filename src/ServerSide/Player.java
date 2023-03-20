@@ -1,5 +1,4 @@
 package ServerSide;
-
 import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,69 +9,59 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
-
-
 public class Player {
         private String name;
         private String username;
         private String password;
 
-      private static ArrayList<Player> players = new ArrayList<Player>();
+        private static ArrayList<Player> players = new ArrayList<Player>();
+
 
         public static ArrayList<Player> getPlayers() {
                 return players;
         }
-
         public static void setPlayers(ArrayList<Player> players) {
                 Player.players = players;
         }
-
         //constructor
         public Player(String name, String username, String password) {
             this.name = name;
             this.username = username;
             this.password = password;
         }
-
     public Player(String username, String password) {
         this.username = username;
         this.password = password;
     }
         //getters and setters
-
-
         public String getName() {
                 return name;
         }
-
         public void setName(String name) {
                 this.name = name;
         }
-
         public String getUsername() {
                 return username;
         }
-
         public void setUsername(String username) {
                 this.username = username;
         }
-
         public String getPassword() {
                 return password;
         }
-
         public void setPassword(String password) {
                 this.password = password;
         }
-
-
         public  String register(String name, String username, String password ) throws IOException, IOException {
 
             boolean exists = false;
             //check if username already exists
-            for (Player player : players) {
-                if (player.getUsername().equals(username)) {
-                    exists = true;
+            //sync the players between threads to prevent Multiple players with same username at the same time
+            synchronized (players) {
+                for (Player player : players) {
+                    if (player.getUsername().equals(username)) {
+                        exists = true;
+                    }
                 }
             }
             //if username doesn't exist write player in file
@@ -82,7 +71,10 @@ public class Player {
                 bw.write(name + "," + username + "," + password);
                 bw.newLine();
                 bw.close();
-                players.add(new Player(name, username, password));
+                //sync the players between threads to prevent adding the players in the arraylist at the same time
+                synchronized (players) {
+                    players.add(new Player(name, username, password));
+                }
                 return "Player added successfully";
 
             } else {
@@ -121,7 +113,6 @@ public class Player {
             while (line != null) {
                 history += line + "\n";
                 line = br.readLine();
-
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -144,6 +135,7 @@ public class Player {
             e.printStackTrace();
         }
     }
+
 
 
 }
