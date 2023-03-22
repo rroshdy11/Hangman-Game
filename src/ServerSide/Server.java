@@ -300,7 +300,7 @@ public class Server extends Thread {
             String teamName = in.readUTF();
             team = Team.searchTeamByName(teamName);
             if (team == null) {
-                out.writeUTF(" Try Another one\n");
+                out.writeUTF(" Team Does not Exist ->Try Another Name one\n");
             }
             else{
                 out.writeUTF("Team found");
