@@ -98,7 +98,7 @@ public class MultiHangManGame extends HangManGame{
     }
     //check if the game is over
     public boolean isGameOver(){
-        if(wrongGuessesTeam1>=MAX_WRONG_ATTEMPTS || wrongGuessesTeam2>=MAX_WRONG_ATTEMPTS){
+        if(wrongGuessesTeam1>=MAX_WRONG_ATTEMPTS || wrongGuessesTeam2>=MAX_WRONG_ATTEMPTS|| word.equalsIgnoreCase(wordToGuess)){
             return true;
         }
         return false;

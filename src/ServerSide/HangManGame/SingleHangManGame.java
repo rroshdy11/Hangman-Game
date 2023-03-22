@@ -16,7 +16,7 @@ public class SingleHangManGame extends HangManGame{
     }
     //check if the game is over if he has reached the max number of wrong guesses or if he has guessed the word
     public boolean isGameOver(){
-        if(wrongGuesses == MAX_WRONG_ATTEMPTS|| word.equals(wordToGuess)){
+        if(wrongGuesses == MAX_WRONG_ATTEMPTS|| word.equalsIgnoreCase(wordToGuess)){
             return true;
         }
         return false;
@@ -28,8 +28,14 @@ public class SingleHangManGame extends HangManGame{
         if(word.contains((guess+"").toLowerCase())||word.contains((guess+"").toUpperCase())){
             result = "Correct";
             for(int i = 0; i<word.length(); i++){
-                if(word.charAt(i) == guess){
-                    wordToGuess = wordToGuess.substring(0,i) + guess + wordToGuess.substring(i+1);
+                if(word.charAt(i) == (guess+"").toLowerCase().charAt(0)|| word.charAt(i) == (guess+"").toUpperCase().charAt(0) ){
+                    if(i==0){
+                        wordToGuess = guess + wordToGuess.substring(i+1);
+                    }
+                    else{
+                        wordToGuess = wordToGuess.substring(0,i) + guess + wordToGuess.substring(i+1);
+                    }
+
                 }
             }
         }

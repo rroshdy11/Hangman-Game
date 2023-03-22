@@ -65,6 +65,10 @@ public class Server extends Thread {
                 out.writeUTF("You chose to register. Please enter your username ,name and password \n separated by comma \n eg: name,username,password");
                 // read the user's input for username and name and password
                 String line = in.readUTF();
+                if (line.split(",").length != 3){
+                    out.writeUTF("Invalid input. Please enter your username ,name and password \n separated by comma \n eg: name,username,password");
+                    continue;
+                }
                 String[] playerDetails = line.split(",");
                 String name = playerDetails[0];
                 String username = playerDetails[1];
@@ -72,7 +76,7 @@ public class Server extends Thread {
                 Player p = new Player(name, username, password);
                 String register = p.register(name, username, password);
                 out.writeUTF(register);
-                if (register.equals("Player added successfully")) {
+                if (register.equals("Player added successfully && logged in successfully")) {
                     player= p;
                     break;
                 }
@@ -83,6 +87,10 @@ public class Server extends Thread {
                 out.writeUTF("You chose to sign in. Please enter your username and password \n separated by comma \n eg: username,password\"");
                 // read the user's input for username and password
                 String line = in.readUTF();
+                if (line.split(",").length != 2){
+                    out.writeUTF("Invalid input. Please enter your username and password \n separated by comma \n eg: username,password");
+                    continue;
+                }
                 String[] playerDetails = line.split(",");
                 String username = playerDetails[0];
                 String password = playerDetails[1];
@@ -402,18 +410,21 @@ public class Server extends Thread {
             }
             else if(game.isGameOver()&&!game.isMyTeamWon(player)){
                 state="Your Team Lost";
-                out.writeUTF("Your team Lost"+"Game Over\n The word was: "
-                        +game.getWord()+"\n"+ "The word was: "+game.getWord()+"\n"+
+                out.writeUTF("Your team Lost"+"Game Over\n" +
+                        "The word was: "
+                        +game.getWord()+"\n"+
                         "Your team score: "+game.getMyTeamScore(player)+"\n");
                 break;
             } else if (game.isGameOver()) {
                 state="Draw";
-                out.writeUTF("Draw"+"Game Over\n The word was: "
-                        +game.getWord()+"\n"+ "The word was: "+game.getWord()+"\n"+
+                out.writeUTF("Draw"+"Game Over\n" +
+                        "The word was: "
+                        +game.getWord()+"\n"+
                         "Your team score: "+game.getMyTeamScore(player)+"\n");
                 break;
             } else if (!game.isGameOver()){
-                out.writeUTF(game.getLastGuess()+"\n Word to guess: " + game.getWordToGuess()+"\n"
+                out.writeUTF(game.getLastGuess()+"\n" +
+                        "Word to guess: " + game.getWordToGuess()+"\n"
                     +"Wrong guesses for my Team: " +
                     game.getMyTeamWrongGuesses(player)+
                     "\n"+"Enter your guess: ");

@@ -44,7 +44,7 @@ public abstract class HangManGame {
     public void setWordToGuess(String wordToGuess) {
         this.wordToGuess = wordToGuess;
     }
-
+    public abstract boolean isGameOver();
 
     public static int getMaxWrongAttempts() {
         return MAX_WRONG_ATTEMPTS;

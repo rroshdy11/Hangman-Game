@@ -35,6 +35,9 @@ public class Client {
                 if (output.contains("Closing")) {
                     break;
                 }
+                else if(output.contains("Invalid choice")){
+                    continue;
+                }
                 String userInfo = console.readLine();
                 out.writeUTF(userInfo);
                 output = in.readUTF();
@@ -114,7 +117,6 @@ public class Client {
                                 }
                             }
                             //play the game
-
                             play(in, out, console);
 
                         }
@@ -191,12 +193,6 @@ public class Client {
             else if (word.contains("exited")) {
                 break;
             }
-            else if(word.contains("not your turn") && outPrintedOnce){
-                continue;
-            }
-            else if(word.contains("not your turn") && !outPrintedOnce){
-                outPrintedOnce = true;
-            }
             //read the guess from the user
             String guess = console.readLine();
             //make sure that the guess is a single character
@@ -208,7 +204,6 @@ public class Client {
                     break;
                 }
             }
-
             out.writeUTF(guess);
             //read the response from the server (result of the guess)
             output = in.readUTF();

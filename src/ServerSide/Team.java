@@ -20,10 +20,7 @@ public class Team {
     public Team() {
         //add the team to the list of Ready teams
         //sync the players between threads to prevent Multiple players to add to list at the same time
-        name= "Team " + (AllTeams.size() + 1);
-        synchronized (AllTeams) {
-            AllTeams.add(this);
-        }
+
     }
 
     public String getName() {
@@ -35,6 +32,7 @@ public class Team {
         synchronized (AllTeams) {
             if (AllTeams.size() == 1) {
                 this.name = name;
+                AllTeams.add(this);
                 return true;
             }
             for (Team team : AllTeams) {
@@ -43,6 +41,7 @@ public class Team {
                 }
             }
             this.name = name;
+            AllTeams.add(this);
             return true;
         }
     }
