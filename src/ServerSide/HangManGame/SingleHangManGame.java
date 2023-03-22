@@ -48,7 +48,7 @@ public class SingleHangManGame extends HangManGame{
 
     //check if the player has won
     public boolean hasWon(){
-        if(word.equals(wordToGuess)){
+        if(word.equalsIgnoreCase(wordToGuess)){
             win = true;
             return true;
         }

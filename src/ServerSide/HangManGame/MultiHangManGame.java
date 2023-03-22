@@ -158,7 +158,7 @@ public class MultiHangManGame extends HangManGame{
         synchronized (wordToGuess) {
             String result = "";
             if ((word.contains((guess + "").toLowerCase()) || word.contains((guess + "").toUpperCase()))
-                    &&(alreadyGuessed.contains((guess + "").toLowerCase()) || alreadyGuessed.contains((guess + "").toUpperCase())) ) {
+                    &&!(alreadyGuessed.contains((guess + "").toLowerCase()) || alreadyGuessed.contains((guess + "").toUpperCase())) ) {
                 result = "Correct";
                 alreadyGuessed=alreadyGuessed+guess;
                 for (int i = 0; i < word.length(); i++) {

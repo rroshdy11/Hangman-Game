@@ -362,7 +362,7 @@ public class Server extends Thread {
             }
             else if(game.isGameOver()&&!game.isMyTeamWon(player)){
                 state="Your Team Lost";
-                out.writeUTF("Your team Lost"+"Game Over\n" +
+                out.writeUTF("Your team Lost "+"Game Over\n" +
                         "The word was: "
                         +game.getWord()+"\n"+
                         "Your team score: "+game.getMyTeamScore(player)+"\n");
