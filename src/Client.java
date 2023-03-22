@@ -83,6 +83,21 @@ public class Client {
                         if(output.contains("number of players in the team")) {
                             //read the number of players per team
                             String numPlayersPerTeam = console.readLine();
+                            //make sure that its a valid number
+                            while (true) {
+                                try {
+                                    int num = Integer.parseInt(numPlayersPerTeam);
+                                    if (num < 2) {
+                                        System.out.println("Please enter a number greater than 1");
+                                        numPlayersPerTeam = console.readLine();
+                                    } else {
+                                        break;
+                                    }
+                                } catch (NumberFormatException e) {
+                                    System.out.println("Please enter a valid number");
+                                    numPlayersPerTeam = console.readLine();
+                                }
+                            }
                             out.writeUTF(numPlayersPerTeam);
                             //read the response from the server
                             output = in.readUTF();
@@ -98,9 +113,24 @@ public class Client {
                                     break;
                                 }
                             }
+                            //play the game
+
+                            play(in, out, console);
+
                         }
                         else if(output.contains("Join a team")){
-
+                            //read the team name from the console
+                            while (true) {
+                                String teamName = console.readLine();
+                                out.writeUTF(teamName);
+                                //check if the team name is valid or not
+                                output = in.readUTF();
+                                System.out.println(output);
+                                if (output.contains("found")) {
+                                    break;
+                                }
+                            }
+                            play(in, out, console);
                         }
                     }
                     else if(output.contains("History")){
@@ -123,6 +153,54 @@ public class Client {
             System.out.println(u);
         } catch(IOException i) {
             System.out.println(i);
+        }
+    }
+    public static void play(DataInputStream in , DataOutputStream out,BufferedReader console ) throws IOException {
+        //read the response from the server(Game Started)
+        String output = in.readUTF();
+        System.out.println(output);
+        //press any key to start the game
+        String any = console.readLine();
+        out.writeUTF(any);
+        //read the word from the server
+
+        while (true) {
+            Boolean outPrintedOnce = false;
+            String word = "";
+            String lastMessage= "";
+            while(true){
+                word = in.readUTF();
+                if(word.contains("not your turn")&& !(word.equals(lastMessage))){
+                    System.out.println(word);
+                }
+                if(!(word.contains("not your turn"))){
+                    break;
+                }
+                lastMessage = word;
+            }
+            System.out.println(word);
+            //read the guess from the user
+            String guess = console.readLine();
+            //make sure that the guess is a single character
+            while (true) {
+                if (guess.length() != 1) {
+                    System.out.println("Please enter a single character");
+                    guess = console.readLine();
+                } else {
+                    break;
+                }
+            }
+            out.writeUTF(guess);
+            //read the response from the server (result of the guess)
+            output = in.readUTF();
+            System.out.println(output);
+            if (output.contains("You won")) {
+                break;
+            } else if (output.contains("You lost")) {
+                break;
+            } else if (output.contains("exited")) {
+                break;
+            }
         }
     }
 }

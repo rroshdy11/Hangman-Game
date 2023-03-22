@@ -37,7 +37,7 @@ public class Server extends Thread {
         this.socket = socket;
     }
 
-    public void startGame() throws IOException {
+    public void startGame() throws IOException, InterruptedException {
         // intialize the input and output streams
         out = new DataOutputStream(socket.getOutputStream());
         in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -102,7 +102,7 @@ public class Server extends Thread {
             }
         }
     }
-        public void gameMenu(DataOutputStream out ,DataInputStream in) throws IOException {
+        public void gameMenu(DataOutputStream out ,DataInputStream in) throws IOException, InterruptedException {
             while (true) {
                 out.writeUTF("\n------------------------------------------------\n" +
                         "choose from menu.\n---------------------\n" +
@@ -155,8 +155,7 @@ public class Server extends Thread {
                         createTeam_StartGame(in, out);
                     }
                     else if(choice.equals("2")){
-                       // joinTeam_StartGame(in, out);
-                        continue;
+                        joinTeam_StartGame(in, out);
                     }
                     else if(choice.equals("3")){
                         continue;
@@ -190,6 +189,8 @@ public class Server extends Thread {
         try {
             startGame();
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -276,7 +277,7 @@ public class Server extends Thread {
         return null;
     }
 
-    public void createTeam_StartGame(DataInputStream in, DataOutputStream out) throws IOException {
+    public void createTeam_StartGame(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException {
         //create team
         out.writeUTF("Enter the number of players in the team:");
         String line = in.readUTF();
@@ -290,41 +291,126 @@ public class Server extends Thread {
             String teamName = in.readUTF();
             if (team.setName(teamName)) {
                 out.writeUTF("Team name is valid");
+                //add the player to the team
+                team.addPlayer(player);
+                team.addClient(this);
                 break;
             } else {
                 out.writeUTF("Team name already exists Try Another one\n");
             }
         }
-        //Search for a team with the same number of players and Create a new MultiHangManGame
-        //searchForGame_Start(numPlayers,team,clients);
+
+        while (!team.isReady()){
+            //wait for the team to be ready
+        }
+        MultiHangManGame game= searchForGame(team.getNumberOfPlayersPerTeam(),team);
+        if(game!=null){
+            out.writeUTF("Game Found Successfully waiting for other team to join... press any key to continue");
+        }
+        else{
+            out.writeUTF("Game not not Found");
+        }
+        String anyKey = in.readUTF();
+        //start the game
+        startGame(in,out,game);
+
+
     }
     //search for a game with the same number of player per team
-    public void searchForGame_Start(int numPlayers,Team team,ArrayList<Server> clients) {
+    public MultiHangManGame searchForGame(int numPlayers,Team team) {
         synchronized (games) {
             for (MultiHangManGame game : games) {
-                if (game.getTeam1().getNumberOfPlayersPerTeam() == numPlayers &&game.isGameStarted()) {
+                if (game.getTeam1()==null ||game.getTeam1().getNumberOfPlayersPerTeam() == numPlayers && !game.isGameStarted()) {
                     game.addTeam(team);
+                    team.setFoundGame(true);
+                    return game;
                 }
             }
         }
+        return null;
     }
 
     //joinTeam_StartGame
-    /*
-    public void joinTeam_StartGame(DataInputStream in, DataOutputStream out) throws IOException {
+
+    public void joinTeam_StartGame(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException {
         //join team
-        out.writeUTF("Enter the Team name: ");
-        String teamName = in.readUTF();
-        Team team = Team.searchForTeam(teamName);
-        if (team == null) {
-            out.writeUTF("Team not found");
-            return;
+        out.writeUTF("To Join a team Enter the Team name: ");
+        Team team;
+        while (true) {
+            // read the user's input for team name till he enter a valid name
+            String teamName = in.readUTF();
+            team = Team.searchTeamByName(teamName);
+            if (team == null) {
+                out.writeUTF("Team not found Try Another one\n");
+            }
+            else{
+                out.writeUTF("Team found");
+                //add the player to the team
+                team.addPlayer(player);
+                team.addClient(this);
+                break;
+            }
         }
-        //Search for a team with the same number of players and Create a new MultiHangManGame
-        searchForGame_Start(team.getNumberOfPlayersPerTeam(),team,clients);
+
+        while (!team.isReady()){
+            //wait for the team to be ready and the game to join
+        }
+        //Search for my game
+        while (!team.isFoundGame()){
+            //wait for the game to be found
+        }
+        MultiHangManGame game = searchForMyGame(team);
+        if(game!=null){
+            out.writeUTF("Game found Successfully press any key to continue");
+        }
+        else{
+            out.writeUTF("Game not started");
+        }
+        String anyKey = in.readUTF();
+        //start the game
+        startGame(in,out,game);
     }
-*/
+    //search for my game in the list of games
+    public MultiHangManGame searchForMyGame(Team team) {
+        synchronized (games) {
+            for (MultiHangManGame game : games) {
+                //get the game that contains my team
+                if (game.getTeam1().equals(team) || game.getTeam2().equals(team)) {
+                    return game;
+                }
+            }
+        }
+        return null;
+    }
 
-
-
+    public void startGame(DataInputStream in,DataOutputStream out,MultiHangManGame game) throws IOException, InterruptedException {
+        while(!game.isGameOver()){
+            if(!game.isMyTurn(player)){
+                //wait for my turn
+                out.writeUTF(game.getLastGuess()+"It's not your turn "+"Word to guess: " + game.getWordToGuess()+"\n"
+                        +"Wrong guesses for my Teaam: " +
+                        game.getMyTeamWrongGuesses(player)+
+                        "\n"+"Its "+game.getTurn()+" turn please wait ....\n");
+                continue;
+            }
+            sleep(100);
+            out.writeUTF(game.getLastGuess()+"\n Word to guess: " + game.getWordToGuess()+"\n"
+                    +"Wrong guesses for my Teaam: " +
+                    game.getMyTeamWrongGuesses(player)+
+                    "\n"+"Enter your guess: ");
+            String charc = in.readUTF();
+            String result = game.guessLetter(charc.charAt(0), player);
+            if(game.isGameOver()&&game.isMyTeamWon(player)){
+                out.writeUTF("Your team Won");
+                break;
+            }
+            else if(game.isGameOver()&&!game.isMyTeamWon(player)){
+                out.writeUTF("Your team Lost");
+                break;
+            }
+            else{
+                out.writeUTF(result);
+            }
+        }
+    }
 }
