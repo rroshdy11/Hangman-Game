@@ -179,6 +179,24 @@ public class Client {
                 lastMessage = word;
             }
             System.out.println(word);
+            if(word.contains("Lost")){
+                break;
+            }
+            else if(word.contains("Won")){
+                break;
+            }
+            else if(word.contains("Draw")){
+                break;
+            }
+            else if (word.contains("exited")) {
+                break;
+            }
+            else if(word.contains("not your turn") && outPrintedOnce){
+                continue;
+            }
+            else if(word.contains("not your turn") && !outPrintedOnce){
+                outPrintedOnce = true;
+            }
             //read the guess from the user
             String guess = console.readLine();
             //make sure that the guess is a single character
@@ -190,13 +208,14 @@ public class Client {
                     break;
                 }
             }
+
             out.writeUTF(guess);
             //read the response from the server (result of the guess)
             output = in.readUTF();
             System.out.println(output);
-            if (output.contains("You won")) {
+            if (output.contains("Won")) {
                 break;
-            } else if (output.contains("You lost")) {
+            } else if (output.contains("Lost")) {
                 break;
             } else if (output.contains("exited")) {
                 break;

@@ -199,9 +199,16 @@ public class MultiHangManGame extends HangManGame{
             String result = "";
             if (word.contains((guess + "").toLowerCase()) || word.contains((guess + "").toUpperCase())) {
                 result = "Correct";
+
                 for (int i = 0; i < word.length(); i++) {
-                    if (word.charAt(i) == guess) {
-                        wordToGuess = wordToGuess.substring(0, i) + guess + wordToGuess.substring(i + 1);
+                    //if the letter is the first letter
+                    if (word.charAt(i) == (guess+"").toLowerCase().charAt(0) || word.charAt(i) == (guess+"").toUpperCase().charAt(0)) {
+                        if (i == 0) {
+                            wordToGuess = guess + wordToGuess.substring(i + 1);
+                        }
+                        else {
+                            wordToGuess = wordToGuess.substring(0, i) + guess + wordToGuess.substring(i + 1);
+                        }
                     }
                 }
             } else {
@@ -247,5 +254,31 @@ public class MultiHangManGame extends HangManGame{
 
     public void setLastGuess(String lastGuess) {
         this.lastGuess = lastGuess;
+    }
+
+    public int getScoreTeam1() {
+        return scoreTeam1;
+    }
+
+    public void setScoreTeam1(int scoreTeam1) {
+        this.scoreTeam1 = scoreTeam1;
+    }
+
+    public int getScoreTeam2() {
+        return scoreTeam2;
+    }
+
+    public void setScoreTeam2(int scoreTeam2) {
+        this.scoreTeam2 = scoreTeam2;
+    }
+
+    public int getMyTeamScore(Player player){
+        if(getTeam1().getPlayers().contains(player)){
+            return scoreTeam1;
+        }
+        else if(getTeam2().getPlayers().contains(player)){
+            return scoreTeam2;
+        }
+        return -1;
     }
 }

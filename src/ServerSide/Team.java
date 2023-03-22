@@ -11,8 +11,6 @@ public class Team {
     private int scoreOfTeam;
     private boolean hasGame = false;
    private ArrayList<Player> players = new ArrayList<Player>();
-   private ArrayList<Server> clients = new ArrayList<>();
-
    private static ArrayList<Team> AllTeams = new ArrayList<Team>();
    private static ArrayList<Team> AllReadyTeams = new ArrayList<Team>();
 
@@ -90,14 +88,6 @@ public class Team {
         this.numberOfPlayersPerTeam = numberOfPlayersPerTeam;
     }
 
-    public ArrayList<Server> getClients() {
-        return clients;
-    }
-
-    public void setClients(ArrayList<Server> clients) {
-        this.clients = clients;
-    }
-
     //add a player to the team
     public void addPlayer(Player player){
         if(player!=null && players.size()<numberOfPlayersPerTeam){
@@ -107,10 +97,7 @@ public class Team {
             addTeamToReadyTeams();
         }
     }
-    //add to client list
-    public void addClient(Server client){
-        clients.add(client);
-    }
+
     //remove a team from the list of ready teams
     public void removeTeamFromReadyTeams(){
         synchronized (AllReadyTeams) {
@@ -124,9 +111,12 @@ public class Team {
         }
     }
     //remove team from the list of all teams
-    public void removeTeamFromAllTeams(){
+    public static void removeTeamFromAllTeams(Team team){
         synchronized (AllTeams) {
-            AllTeams.remove(this);
+            AllTeams.remove(team);
+        }
+        synchronized (AllReadyTeams) {
+            AllReadyTeams.remove(team);
         }
     }
     //add team to the list of all teams

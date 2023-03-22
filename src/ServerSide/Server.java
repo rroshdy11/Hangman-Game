@@ -293,7 +293,6 @@ public class Server extends Thread {
                 out.writeUTF("Team name is valid");
                 //add the player to the team
                 team.addPlayer(player);
-                team.addClient(this);
                 break;
             } else {
                 out.writeUTF("Team name already exists Try Another one\n");
@@ -341,13 +340,12 @@ public class Server extends Thread {
             String teamName = in.readUTF();
             team = Team.searchTeamByName(teamName);
             if (team == null) {
-                out.writeUTF("Team not found Try Another one\n");
+                out.writeUTF(" Try Another one\n");
             }
             else{
                 out.writeUTF("Team found");
                 //add the player to the team
                 team.addPlayer(player);
-                team.addClient(this);
                 break;
             }
         }
@@ -384,8 +382,9 @@ public class Server extends Thread {
     }
 
     public void startGame(DataInputStream in,DataOutputStream out,MultiHangManGame game) throws IOException, InterruptedException {
-        while(!game.isGameOver()){
-            if(!game.isMyTurn(player)){
+        String state="";
+        while(true){
+            if(!game.isMyTurn(player)&& !game.isGameOver()){
                 //wait for my turn
                 out.writeUTF(game.getLastGuess()+"It's not your turn "+"Word to guess: " + game.getWordToGuess()+"\n"
                         +"Wrong guesses for my Teaam: " +
@@ -394,23 +393,50 @@ public class Server extends Thread {
                 continue;
             }
             sleep(100);
-            out.writeUTF(game.getLastGuess()+"\n Word to guess: " + game.getWordToGuess()+"\n"
-                    +"Wrong guesses for my Teaam: " +
-                    game.getMyTeamWrongGuesses(player)+
-                    "\n"+"Enter your guess: ");
-            String charc = in.readUTF();
-            String result = game.guessLetter(charc.charAt(0), player);
             if(game.isGameOver()&&game.isMyTeamWon(player)){
-                out.writeUTF("Your team Won");
+                state="Your Team Won";
+                out.writeUTF("Your team Won "+"Game Over\n The word was: "
+                        +game.getWord()+"\n"+"The word was: "+game.getWord()+"\n"+
+                        "Your team score: "+game.getMyTeamScore(player)+"\n");
                 break;
             }
             else if(game.isGameOver()&&!game.isMyTeamWon(player)){
-                out.writeUTF("Your team Lost");
+                state="Your Team Lost";
+                out.writeUTF("Your team Lost"+"Game Over\n The word was: "
+                        +game.getWord()+"\n"+ "The word was: "+game.getWord()+"\n"+
+                        "Your team score: "+game.getMyTeamScore(player)+"\n");
                 break;
-            }
-            else{
+            } else if (game.isGameOver()) {
+                state="Draw";
+                out.writeUTF("Draw"+"Game Over\n The word was: "
+                        +game.getWord()+"\n"+ "The word was: "+game.getWord()+"\n"+
+                        "Your team score: "+game.getMyTeamScore(player)+"\n");
+                break;
+            } else if (!game.isGameOver()){
+                out.writeUTF(game.getLastGuess()+"\n Word to guess: " + game.getWordToGuess()+"\n"
+                    +"Wrong guesses for my Team: " +
+                    game.getMyTeamWrongGuesses(player)+
+                    "\n"+"Enter your guess: ");
+                String charc = in.readUTF();
+                String result = game.guessLetter(charc.charAt(0), player);
                 out.writeUTF(result);
             }
         }
+
+        //save the game to player history
+        if(game.getTeam1().getPlayers().contains(player)) {
+            player.addtoHistory(state,game.getScoreTeam1());
+        }
+        else if(game.getTeam2().getPlayers().contains(player)) {
+            player.addtoHistory(state,game.getScoreTeam2());
+        }
+        //remove the game from the list of games
+        games.remove(game);
+        //remove the team from the list of teams
+        Team.removeTeamFromAllTeams(game.getTeam1());
+        Team.removeTeamFromAllTeams(game.getTeam2());
+        //add another game to the list of games
+        games.add(new MultiHangManGame());
+
     }
 }
