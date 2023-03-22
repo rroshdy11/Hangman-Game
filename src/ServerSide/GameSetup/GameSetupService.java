@@ -4,6 +4,7 @@ import ServerSide.HangManGame.HangManGame;
 import ServerSide.HangManGame.MultiHangManGame;
 import ServerSide.Player;
 import ServerSide.Server;
+import ServerSide.Team;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -15,8 +16,8 @@ public class GameSetupService {
             HangManGame.setWords(readWords());
             Player.setPlayers(readPlayersFromFile());
             HangManGame.setMaxWrongAttempts((Integer) readGameConfigurations().get(0));
-            MultiHangManGame.setMaxNumberOfPlayers((Integer) readGameConfigurations().get(1));
-            MultiHangManGame.setMinNumberOfPlayers((Integer) readGameConfigurations().get(2));
+            Team.setMaxNumberOfPlayers((Integer) readGameConfigurations().get(1));
+            Team.setMinNumberOfPlayers((Integer) readGameConfigurations().get(2));
 
         } catch (IOException e) {
             e.printStackTrace();

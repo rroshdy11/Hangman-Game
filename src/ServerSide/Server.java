@@ -15,7 +15,6 @@ public class Server extends Thread {
     private Socket socket = null;
     DataOutputStream out = null;
     DataInputStream in = null;
-    private static ArrayList<Server> clients = new ArrayList<Server>();
     private static ArrayList<MultiHangManGame> games = new ArrayList<>();
 
     //Static Number of Clients to be connected
@@ -25,13 +24,6 @@ public class Server extends Thread {
 
     private  Player player;
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
 
     public void setSocket(Socket socket) {
         this.socket = socket;
@@ -157,16 +149,16 @@ public class Server extends Thread {
                     //startGame();
                 } else if (choicePlayer.contains("2")) {
                     out.writeUTF("Starting Multi Player Game .... \n"+
-                            "1- Create Team \n"+ "2- Join Team \n"+ "3- Exit");
+                            "1- Create Team and Start play \n"+ "2- Join Team and Start Play \n"+ "3- Exit From Game \n");
                     String choice = in.readUTF();
-                    if(choice.equals("1")) {
+                    if(choice.contains("1")) {
                         createTeam_StartGame(in, out);
                     }
-                    else if(choice.equals("2")){
+                    else if(choice.contains("2")){
                         joinTeam_StartGame(in, out);
                     }
-                    else if(choice.equals("3")){
-                        continue;
+                    else if(choice.contains("3")){
+                        break;
                     }
                     else{
                         out.writeUTF("Invalid choice. Please choose either 1 or 2 or 3.");
@@ -233,7 +225,6 @@ public class Server extends Thread {
                 Server gameServer = new Server();
                 gameServer.setSocket(socket);
                 //add the client to the list of clients
-                clients.add(gameServer);
 
                 //start the thread
                 gameServer.start();
@@ -245,45 +236,6 @@ public class Server extends Thread {
         }
     }
 
-    public Socket getSocket() {
-        return socket;
-    }
-
-    public static int getNumClients() {
-        return numClients;
-    }
-
-    public static void setNumClients(int numClients) {
-        Server.numClients = numClients;
-    }
-
-    public static int getMinClients() {
-        return minClients;
-    }
-
-    public static void setMinClients(int minClients) {
-        Server.minClients = minClients;
-    }
-
-    //return the player with the username
-    public static Player searchForOnlinePlayer(String username){
-        for (Server client : clients) {
-            if(client.getPlayer().getUsername().equals(username)){
-                return client.getPlayer();
-            }
-        }
-        return null;
-    }
-
-    //return a thread with the username
-    public static Server searchForOnlinePlayerThread(String username){
-        for (Server client : clients) {
-            if(client.getPlayer().getUsername().equals(username)){
-                return client;
-            }
-        }
-        return null;
-    }
 
     public void createTeam_StartGame(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException {
         //create team
@@ -367,7 +319,7 @@ public class Server extends Thread {
         }
         MultiHangManGame game = searchForMyGame(team);
         if(game!=null){
-            out.writeUTF("Game found Successfully press any key to continue");
+            out.writeUTF("Game found Successfully waiting for other team to join... press any key to continue");
         }
         else{
             out.writeUTF("Game not started");
@@ -403,8 +355,8 @@ public class Server extends Thread {
             sleep(100);
             if(game.isGameOver()&&game.isMyTeamWon(player)){
                 state="Your Team Won";
-                out.writeUTF("Your team Won "+"Game Over\n The word was: "
-                        +game.getWord()+"\n"+"The word was: "+game.getWord()+"\n"+
+                out.writeUTF("Your team Won "+"Game Over\n"
+                        +"The word was: "+game.getWord()+"\n"+
                         "Your team score: "+game.getMyTeamScore(player)+"\n");
                 break;
             }
@@ -449,5 +401,25 @@ public class Server extends Thread {
         //add another game to the list of games
         games.add(new MultiHangManGame());
 
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public static int getNumClients() {
+        return numClients;
+    }
+
+    public static void setNumClients(int numClients) {
+        Server.numClients = numClients;
+    }
+
+    public static int getMinClients() {
+        return minClients;
+    }
+
+    public static void setMinClients(int minClients) {
+        Server.minClients = minClients;
     }
 }

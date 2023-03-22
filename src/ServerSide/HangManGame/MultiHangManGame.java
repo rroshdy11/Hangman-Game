@@ -6,8 +6,6 @@ import ServerSide.Team;
 import java.util.ArrayList;
 
 public class MultiHangManGame extends HangManGame{
-    private static int MAX_NUMBER_OF_PLAYERS;
-    private static int MIN_NUMBER_OF_PLAYERS;
 
     private ArrayList<Team> teams = new ArrayList<Team>();
 
@@ -20,6 +18,7 @@ public class MultiHangManGame extends HangManGame{
     private int scoreTeam1;
     private int scoreTeam2;
     ArrayList <Boolean> turns = new ArrayList<>();
+    private String alreadyGuessed = "";
 
     private String lastGuess="";
     public MultiHangManGame() {
@@ -27,39 +26,6 @@ public class MultiHangManGame extends HangManGame{
 
     }
 
-    //function to set 2 teams to the game
-    public void setTeams(Team team1, Team team2){
-        if(team1!=null && team2!=null){
-            teams.add(team1);
-            teams.add(team2);
-        }
-    }
-    //function to search for a game that is ready to start
-    public static int getMaxNumberOfPlayers() {
-        return MAX_NUMBER_OF_PLAYERS;
-    }
-
-    public static void setMaxNumberOfPlayers(int maxNumberOfPlayers) {
-        MAX_NUMBER_OF_PLAYERS = maxNumberOfPlayers;
-    }
-
-    //function to check if the game is ready to start
-
-
-
-    public static int getMinNumberOfPlayers() {
-        return MIN_NUMBER_OF_PLAYERS;
-    }
-
-    public static void setMinNumberOfPlayers(int minNumberOfPlayers) {
-        MIN_NUMBER_OF_PLAYERS = minNumberOfPlayers;
-    }
-    private boolean isGameReadyToStart(){
-        if(teams.size() == 2){
-            return true;
-        }
-        return false;
-    }
     //add a team to the game
     public void addTeam(Team team){
         if(team!=null && teams.size()<2 && !isGameStarted){
@@ -103,13 +69,7 @@ public class MultiHangManGame extends HangManGame{
         }
         return false;
     }
-    //get second team
-    public Team getTeam2(){
-        if(teams.size()>1){
-            return teams.get(1);
-        }
-        return null;
-    }
+
     //function start the game
     public void startGame(){
         wrongGuessesTeam1 = 0;
@@ -197,9 +157,10 @@ public class MultiHangManGame extends HangManGame{
     public String guess(char guess){
         synchronized (wordToGuess) {
             String result = "";
-            if (word.contains((guess + "").toLowerCase()) || word.contains((guess + "").toUpperCase())) {
+            if ((word.contains((guess + "").toLowerCase()) || word.contains((guess + "").toUpperCase()))
+                    &&(alreadyGuessed.contains((guess + "").toLowerCase()) || alreadyGuessed.contains((guess + "").toUpperCase())) ) {
                 result = "Correct";
-
+                alreadyGuessed=alreadyGuessed+guess;
                 for (int i = 0; i < word.length(); i++) {
                     //if the letter is the first letter
                     if (word.charAt(i) == (guess+"").toLowerCase().charAt(0) || word.charAt(i) == (guess+"").toUpperCase().charAt(0)) {
@@ -248,6 +209,16 @@ public class MultiHangManGame extends HangManGame{
         return false;
     }
 
+    public int getMyTeamScore(Player player){
+        if(getTeam1().getPlayers().contains(player)){
+            return scoreTeam1;
+        }
+        else if(getTeam2().getPlayers().contains(player)){
+            return scoreTeam2;
+        }
+        return -1;
+    }
+
     public String getLastGuess() {
         return lastGuess;
     }
@@ -271,14 +242,21 @@ public class MultiHangManGame extends HangManGame{
     public void setScoreTeam2(int scoreTeam2) {
         this.scoreTeam2 = scoreTeam2;
     }
-
-    public int getMyTeamScore(Player player){
-        if(getTeam1().getPlayers().contains(player)){
-            return scoreTeam1;
+    //get second team
+    public Team getTeam2(){
+        if(teams.size()>1){
+            return teams.get(1);
         }
-        else if(getTeam2().getPlayers().contains(player)){
-            return scoreTeam2;
-        }
-        return -1;
+        return null;
     }
+
+    //function to set 2 teams to the game
+    public void setTeams(Team team1, Team team2){
+        if(team1!=null && team2!=null){
+            teams.add(team1);
+            teams.add(team2);
+        }
+    }
+
+
 }

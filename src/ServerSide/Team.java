@@ -6,8 +6,10 @@ import java.util.ArrayList;
 
 public class Team {
     private String name;
+    private static int MAX_NUMBER_OF_PLAYERS;
+    private static int MIN_NUMBER_OF_PLAYERS;
 
-    private int numberOfPlayersPerTeam=4;
+    private int numberOfPlayersPerTeam=2;//default value
     private int scoreOfTeam;
     private boolean hasGame = false;
    private ArrayList<Player> players = new ArrayList<Player>();
@@ -153,5 +155,24 @@ public class Team {
 
     public void setFoundGame(boolean foundGame) {
         this.foundGame = foundGame;
+    }
+
+    public static int getMaxNumberOfPlayers() {
+        return MAX_NUMBER_OF_PLAYERS;
+    }
+
+    public static void setMaxNumberOfPlayers(int maxNumberOfPlayers) {
+        MAX_NUMBER_OF_PLAYERS = maxNumberOfPlayers;
+    }
+
+    //function to check if the game is ready to start
+
+
+    public static int getMinNumberOfPlayers() {
+        return MIN_NUMBER_OF_PLAYERS;
+    }
+
+    public static void setMinNumberOfPlayers(int minNumberOfPlayers) {
+        MIN_NUMBER_OF_PLAYERS = minNumberOfPlayers;
     }
 }
