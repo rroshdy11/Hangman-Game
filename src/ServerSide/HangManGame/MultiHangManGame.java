@@ -249,7 +249,6 @@ public class MultiHangManGame extends HangManGame{
         }
         return null;
     }
-
     //function to set 2 teams to the game
     public void setTeams(Team team1, Team team2){
         if(team1!=null && team2!=null){

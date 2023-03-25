@@ -81,17 +81,21 @@ public class Client {
                         String choice2 = console.readLine();
                         out.writeUTF(choice2);
                         //read the response from the server
+
                         output = in.readUTF();
                         System.out.println(output);
+
                         if(output.contains("number of players in the team")) {
                             //read the number of players per team
+                            String maxPlayersPerTeam = in.readUTF();
+                            int max = Integer.parseInt(maxPlayersPerTeam);
                             String numPlayersPerTeam = console.readLine();
                             //make sure that its a valid number
                             while (true) {
                                 try {
                                     int num = Integer.parseInt(numPlayersPerTeam);
-                                    if (num < 2) {
-                                        System.out.println("Please enter a number greater than 1");
+                                    if (num > max) {
+                                        System.out.println("Please enter a number less than or equal" + max);
                                         numPlayersPerTeam = console.readLine();
                                     } else {
                                         break;
@@ -105,6 +109,7 @@ public class Client {
                             //read the response from the server
                             output = in.readUTF();
                             System.out.println(output);
+
                             //read the team name
                             while (true) {
                                 String teamName = console.readLine();

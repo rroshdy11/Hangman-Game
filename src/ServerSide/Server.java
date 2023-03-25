@@ -68,7 +68,7 @@ public class Server extends Thread {
                 Player p = new Player(name, username, password);
                 String register = p.register(name, username, password);
                 out.writeUTF(register);
-                if (register.equals("Player added successfully && logged in successfully")) {
+                if (register.equals("Player added successfully")) {
                     player= p;
                     break;
                 }
@@ -239,12 +239,17 @@ public class Server extends Thread {
 
     public void createTeam_StartGame(DataInputStream in, DataOutputStream out) throws IOException, InterruptedException {
         //create team
-        out.writeUTF("Enter the number of players in the team:");
-        String line = in.readUTF();
-        int numPlayers = Integer.parseInt(line);
-        //create the team
         Team team = new Team();
-        team.setNumberOfPlayersPerTeam(numPlayers);
+            out.writeUTF("Enter the number of players in the team : Maximum number of players in a team is "+Team.getMaxNumberOfPlayers());
+            out.writeUTF(""+Team.getMaxNumberOfPlayers());
+            String line = in.readUTF();
+            int numPlayers = Integer.parseInt(line);
+            //create the team
+
+            //check for mx number of plyers
+            team.setNumberOfPlayersPerTeam(numPlayers);
+
+
         out.writeUTF("Team Created Successfully\n Insert the Team name: ");
         while (true) {
             // read the user's input for team name till he enter a valid name
