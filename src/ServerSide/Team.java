@@ -32,7 +32,7 @@ public class Team {
     public boolean setName(String name) {
         //check if the name is unique
         synchronized (AllTeams) {
-            if (AllTeams.size() == 1) {
+            if (AllTeams.size() ==0) {
                 this.name = name;
                 AllTeams.add(this);
                 return true;
