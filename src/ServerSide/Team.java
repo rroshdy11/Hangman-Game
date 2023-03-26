@@ -89,7 +89,7 @@ public class Team {
         this.numberOfPlayersPerTeam = numberOfPlayersPerTeam;
     }
 
-    //add a player to the team
+    //add a player to the team 2
     public void addPlayer(Player player){
         if(player!=null && players.size()<numberOfPlayersPerTeam){
             players.add(player);

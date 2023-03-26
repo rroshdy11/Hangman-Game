@@ -110,6 +110,7 @@ public class MultiHangManGame extends HangManGame{
     //code to modify tommorow
     public String guessLetter(char letter, Player player){
         //change the turn to the next player
+        //[1,0,0,0]
         synchronized (this) {
             if (turns.get(turns.size() - 1)) {
                 //set the first player to play

@@ -255,7 +255,7 @@ public class Server extends Thread {
             // read the user's input for team name till he enter a valid name
             String teamName = in.readUTF();
             if (team.setName(teamName)) {
-                out.writeUTF("Team name is valid");
+                out.writeUTF("Team name is valid wait For Other Playes to join you ....");
                 //add the player to the team
                 team.addPlayer(player);
                 break;
